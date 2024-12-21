@@ -1,0 +1,51 @@
+import logging
+import random
+from telegram import Update
+from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
+
+# Enable logging
+logging.basicConfig(
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    level=logging.INFO
+)
+
+# Dictionary to store user-specific "gayness" levels (replace with a database in a real application)
+user_gayness = {}
+
+
+async def me_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text(":- 𝙒𝘼𝙎𝙎𝙐𝙋!\n:- 𝙔𝙤𝙪 𝙖𝙧𝙚 𝙣𝙤𝙩 𝙖𝙪𝙩𝙝𝙤𝙧𝙞𝙨𝙚𝙙 𝙣𝙞𝙜𝙜𝙧𝙧 💦\n:- 𝙔𝙤𝙪𝙧 𝙧𝙤𝙡𝙚 𝙞𝙨 𝙜𝙖𝙮 🤡\n:- 𝙂𝙤 𝙩𝙤 𝙙𝙚𝙫𝙚𝙡𝙤𝙥𝙚𝙧 𝙩𝙤 𝙪𝙨𝙚 𝙞𝙩 @whytorrent🔥")
+
+
+async def gay_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_id = update.effective_user.id
+    gayness_level = user_gayness.get(user_id, random.randint(1, 100)) #Get from dict or generate random
+    await update.message.reply_text(f"𝙔𝙤𝙪 𝙖𝙧𝙚 {𝙜𝙖𝙮𝙣𝙚𝙨𝙨_𝙡𝙚𝙫𝙚𝙡}% 𝙜𝙖𝙮.🏳️‍🌈")
+
+
+async def set_gayness_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Sets a specific gayness level for a user (admin only)."""
+    if update.effective_user.id == 6098211609: # Replace with your admin ID
+      try:
+        args = context.args
+        if len(args) != 2:
+          await update.message.reply_text("Usage: /setgayness <user_id> <gayness_level>")
+          return
+        user_id = int(args[0])
+        gayness_level = int(args[1])
+        user_gayness[user_id] = gayness_level
+        await update.message.reply_text(f"𝙂𝙖𝙮𝙣𝙚𝙨𝙨 𝙡𝙚𝙫𝙚𝙡 𝙛𝙤𝙧 𝙪𝙨𝙚𝙧 {user_id} 𝙨𝙚𝙩 𝙩𝙤 {gayness_level}%")
+      except ValueError:
+        await update.message.reply_text("Invalid input. User ID and gayness level must be integers.")
+    else:
+      await update.message.reply_text("You are not authorized to use this command.")
+
+if __name__ == '__main__':
+    application = ApplicationBuilder().token("7582823444:AAEF7RRSeIQ6lhsyGQvITrb2Zt8ohGe-zkc").build()
+
+    application.add_handler(CommandHandler("me", me_command))
+    application.add_handler(CommandHandler("gay", gay_command))
+    application.add_handler(CommandHandler("setgayness", set_gayness_command)) # Admin command
+
+    application.run_polling()
+    
